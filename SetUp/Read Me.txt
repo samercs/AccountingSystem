@@ -1,0 +1,13 @@
+Setup New Project 
+1-Copy and paste the entire Mzayad solution folder.
+2-Update to commit 20e963c (picture attached).
+3-Delete .git folder at the root. There is a .gitignore file, we need to keep that.
+4-You can then rename all instances of Mzayad with Ferjan (Use Script "Rename-Visual-Studio-Solution.ps1").
+
+Just but this Script in Same Level Of Folder Project and ececute this script .
+EX: if project folder in C:\Projects\Mzayad the location of script must be C:\Projects.
+
+5-delete old database in folder app_data
+6-make sure you changed database name in web.config
+7-execute nuget command "update-database".
+8-Test everything runs locally, that the database gets created, and all of the basic site features work.

@@ -1,0 +1,56 @@
+@using AccountingSystem.Core.Attribute
+@{
+    //get the full qualified name of property decorated with our attribute
+    var propertyName = ViewData.TemplateInfo.GetFullHtmlFieldName("");
+    //javascript doesn't work properly with ids contain dot
+    var propertyId = propertyName.Replace(".", "_");
+    //generate random Id in case our view contains many instances
+    var textBoxId = Guid.NewGuid().ToString();
+}
+
+@functions{
+    //generate text box for autocomplete feature
+    private MvcHtmlString TextBox(string id, string propertyName)
+    {
+
+        var tagBuilder = new TagBuilder("input");
+        tagBuilder.MergeAttribute("id", id);
+        tagBuilder.MergeAttribute("type", "text");
+        tagBuilder.MergeAttribute("data-source", GetUrl());
+        tagBuilder.MergeAttribute("class", "form-control auto-complete");
+        tagBuilder.MergeAttribute("data-name", propertyName);
+        return MvcHtmlString.Create(tagBuilder.ToString());
+    }
+
+    private MvcHtmlString Hidden(string name)
+    {
+        var tagBuilder = new TagBuilder("input");
+        tagBuilder.MergeAttribute("type", "hidden");
+        tagBuilder.MergeAttribute("id", name.Replace(".", "_"));
+        tagBuilder.MergeAttribute("name", name);
+        
+        return MvcHtmlString.Create(tagBuilder.ToString());
+    }
+
+    private string GetUrl()
+    {
+        var attribute = ViewData.ModelMetadata.ContainerType
+                        // Get the property we are displaying for (LanguageId)
+                        .GetProperty(ViewData.ModelMetadata.PropertyName)
+                        // Get all attributes of type AutoCompleteUIHintAttribute
+                        .GetCustomAttributes(typeof(AutoCompleteUiHintAttribute), false)
+                        // Cast the result as AutoCompleteUIHintAttribute
+                        .Select(a => a as AutoCompleteUiHintAttribute)
+                        // Get the first one or null
+                        .FirstOrDefault(a => a != null);
+
+        return attribute?.DataSourceUri;
+    }
+
+}
+
+
+@Html.Raw(TextBox(textBoxId, propertyName))
+
+@Html.Raw(Hidden(propertyName))
+

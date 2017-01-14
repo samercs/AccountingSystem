@@ -1,0 +1,28 @@
+@model AccountingSystem.Models.User.AddStockViewModel
+
+@{
+    ViewBag.Title = "Add user stock";
+
+}
+
+<h2>Add user stock</h2>
+<p class="help-block">
+    <i>Hint:</i> you can add or remove stock codes by check/un-check stock code.
+</p>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    foreach (var stockCode in Model.AllStockCodes)
+    {
+        <div class="checkbox">
+            <label>
+                <input  @(Model.UserStockCodes.Select(i => i.StockCodeId).Contains(stockCode.StockCodeId) ? "checked='checked'" :"") name="stockCodes" type="checkbox" value="@stockCode.StockCodeId" >
+                @stockCode.CodeName
+            </label>
+        </div>
+    }
+
+    <section class="form-button">
+        <button type="submit" class="btn btn-default">Save My Stock Codes</button>
+    </section>
+}

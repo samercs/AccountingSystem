@@ -1,0 +1,41 @@
+@model AccountingSystem.Models.TestUi.IndexViewModel
+
+@{
+    ViewBag.Title = "Test Ui Hint";
+}
+
+
+<h1>@ViewBag.Title</h1>
+@using (Html.BeginForm())
+{
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+
+            @Html.EditorFor(m => m.Name)
+
+        </div>
+        <section class="form-button">
+            <button type="submit" class="btn btn-default">Submit</button>
+        </section>
+    </div>
+}
+@section scripts
+{
+    <script type="text/javascript">
+        $(function() {
+            $(".auto-complete").each(function() {
+                var dataSouce = $(this).data("source");
+                var id = $(this).attr("id");
+                var hiddenName = $(this).data("name");
+                $("#" + id).autocomplete({
+                    source:dataSouce,// datasource url
+                    minLength: 1,// type at least 1 character
+                    select: function (event, ui) {
+                        $("#" + hiddenName).val(ui.item.id);// set hidden field value with the id of selected language.
+                    }
+                });
+            });
+
+        });
+    </script>
+}
