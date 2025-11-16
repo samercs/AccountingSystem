@@ -1,5 +1,4 @@
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,25 +10,23 @@ namespace AccountingSystem.Entity
 {
     public class User : IdentityUser, IValidatableObject
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Token { get; set; }
-
-
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Token { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedUtc { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager)
         {
-            return await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
+            return (ClaimsIdentity)(await manager.CreateAsync(this)).Principal.Identity!;
         }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager, string authenticationType)
         {
-            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-            var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
             // Add custom user claims here
-            return userIdentity;
+            var principal = await manager.CreateAsync(this);
+            return (ClaimsIdentity)principal.Principal.Identity!;
         }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

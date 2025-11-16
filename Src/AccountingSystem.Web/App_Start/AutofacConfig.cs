@@ -1,33 +1,21 @@
+using AccountingSystem.Core.Service;
 using AccountingSystem.Data;
 using Autofac;
-using Autofac.Integration.Mvc;
-using AccountingSystem.Core.Service;
-using System.Reflection;
-using System.Web.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace AccountingSystem
 {
     public class AutofacConfig
     {
-        public static IContainer RegisterAll()
+        public static void ConfigureContainer(ContainerBuilder builder, IConfiguration configuration)
         {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(new AutofacWebTypesModule());
-            builder.RegisterControllers(Assembly.GetExecutingAssembly());
-
-
-            builder.RegisterType<AppService>().As<IAppService>().InstancePerRequest();
-            builder.RegisterType<AuthService>().As<IAuthService>().InstancePerRequest();
-            builder.RegisterType<CookieService>().As<ICookieService>().InstancePerRequest();
-            builder.RegisterType<DataContextFactory>().As<IDataContextFactory>().SingleInstance();
-            return Container(builder);
-        }
-
-        private static IContainer Container(ContainerBuilder builder)
-        {
-            var container = builder.Build();
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
-            return container;
+            // Register services
+            builder.RegisterType<AppService>().As<IAppService>().InstancePerLifetimeScope();
+            builder.RegisterType<AuthService>().As<IAuthService>().InstancePerLifetimeScope();
+            builder.RegisterType<CookieService>().As<ICookieService>().InstancePerLifetimeScope();
+            builder.RegisterType<DataContextFactory>().As<IDataContextFactory>()
+                .WithParameter(new TypedParameter(typeof(IConfiguration), configuration))
+                .SingleInstance();
         }
     }
 }
